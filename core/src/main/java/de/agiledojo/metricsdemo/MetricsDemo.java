@@ -2,7 +2,7 @@ package de.agiledojo.metricsdemo;
 
 public class MetricsDemo {
 
-    @Timed
+    @Timed("demo")
     public void main() {
 
     }

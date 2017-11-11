@@ -5,7 +5,7 @@ import de.agiledojo.metricsdemo.Timed;
 public class TimedBean {
 
 
-    @Timed
+    @Timed("demo.timer")
     public void TimedRun() {
 
     }

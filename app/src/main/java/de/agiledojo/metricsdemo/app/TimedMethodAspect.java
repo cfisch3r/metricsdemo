@@ -1,5 +1,8 @@
 package de.agiledojo.metricsdemo.app;
 
+import de.agiledojo.metricsdemo.Timed;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -13,13 +16,13 @@ public class TimedMethodAspect {
         this.timer = timer;
     }
 
-    @Before("@annotation(de.agiledojo.metricsdemo.Timed)")
-    public void beforeCallingTimedMethod() {
-        timer.start("demo.timer",Thread.currentThread().getId(),System.currentTimeMillis());
+    @Before(value = "@annotation(timed)")
+    public void beforeCallingTimedMethod(Timed timed) {
+        timer.start(timed.value(),Thread.currentThread().getId(),System.currentTimeMillis());
     }
 
-    @AfterReturning(pointcut = "@annotation(de.agiledojo.metricsdemo.Timed)")
-    public void afterCallingTimedMethod() {
-        timer.stop("demo.timer",Thread.currentThread().getId(),System.currentTimeMillis());
+    @AfterReturning(pointcut = "@annotation(timed)")
+    public void afterCallingTimedMethod(Timed timed) {
+        timer.stop(timed.value(),Thread.currentThread().getId(),System.currentTimeMillis());
     }
 }
