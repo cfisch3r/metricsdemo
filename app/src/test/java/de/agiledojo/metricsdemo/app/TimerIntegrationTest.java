@@ -29,26 +29,26 @@ public class TimerIntegrationTest {
     }
 
     @MockBean
-    private ExecutionTimer metricReporter;
+    private ExecutionTimer timer;
 
     @Autowired
     TimedBean timedBean;
 
     @Autowired
-    TimedMethodAspect timer;
+    TimedMethodAspect timedMethodAspect;
 
     @Test
     public void without_Timed_Annotation_no_metric_is_reported() {
         timedBean.unTimedRun();
-        verify(metricReporter, never()).start(anyString(), anyLong(), anyLong());
-        verify(metricReporter, never()).stop(anyString(), anyLong(), anyLong());
+        verify(timer, never()).start(anyString(), anyLong(), anyLong());
+        verify(timer, never()).stop(anyString(), anyLong(), anyLong());
     }
 
     @Test
     public void with_Timed_Annotation_metric_is_reported() {
         timedBean.TimedRun();
-        verify(metricReporter).start(eq("demo.timer"), eq(Thread.currentThread().getId()), anyLong());
-        verify(metricReporter).stop(eq("demo.timer") ,eq(Thread.currentThread().getId()), anyLong());
+        verify(timer).start(eq("demo.timer"), eq(Thread.currentThread().getId()), anyLong());
+        verify(timer).stop(eq("demo.timer") ,eq(Thread.currentThread().getId()), anyLong());
     }
 
 }

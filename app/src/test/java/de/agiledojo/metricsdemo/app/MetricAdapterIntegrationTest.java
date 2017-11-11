@@ -33,8 +33,8 @@ public class MetricAdapterIntegrationTest {
 
     @Test
     public void when_submitted_metric_is_listed_in_web_interface() throws Exception {
-        metricAdapter.submit("demo.timer",300);
+        metricAdapter.submit("demo.timedMethodAspect",300);
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/metrics"));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$..['gauge.demo.timer']").exists());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$..['gauge.demo.timedMethodAspect']").exists());
     }
 }
