@@ -29,13 +29,13 @@ public class TimerIntegrationTest {
     }
 
     @MockBean
-    private MetricReporter metricReporter;
+    private ExecutionTimer metricReporter;
 
     @Autowired
     TimedBean timedBean;
 
     @Autowired
-    ExecutionTimer timer;
+    TimedMethodAspect timer;
 
     @Test
     public void without_Timed_Annotation_no_metric_is_reported() {

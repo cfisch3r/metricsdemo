@@ -1,6 +1,5 @@
 package de.agiledojo.metricsdemo.app;
 
-import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.metrics.GaugeService;
@@ -19,8 +18,8 @@ public class Application {
     };
 
     @Bean
-    public ExecutionTimer executionTimer(@Autowired MetricReporter reporter) {
-        return new ExecutionTimer(reporter);
+    public TimedMethodAspect executionTimer(@Autowired ExecutionTimer reporter) {
+        return new TimedMethodAspect(reporter);
     }
 
     public static void main(String[] args) {
