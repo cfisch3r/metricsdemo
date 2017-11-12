@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 public class MetricsServiceConfiguration {
 
     @Bean
-    public MetricsService metricsService(@Autowired ExecutionTimer executionTimer) {
-        return new SpringMetricsService(executionTimer);
+    public MetricsService metricsService(@Autowired ExecutionTimeReporter reporter) {
+        return new SpringMetricsService(reporter);
     }
 
 }

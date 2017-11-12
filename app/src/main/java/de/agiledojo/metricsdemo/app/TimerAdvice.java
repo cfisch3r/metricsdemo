@@ -7,36 +7,25 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 public class TimerAdvice implements MethodInterceptor {
-    private ExecutionTimer executionTimer;
+
+    private ExecutionTimeReporter reporter;
     private Class<? extends Annotation> annotationClass;
 
-    public <A extends Annotation> TimerAdvice(ExecutionTimer executionTimer, Class<A> annotationClass) {
-        this.executionTimer = executionTimer;
+    public <A extends Annotation> TimerAdvice(ExecutionTimeReporter reporter, Class<A> annotationClass) {
+        this.reporter = reporter;
         this.annotationClass = annotationClass;
     }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
+
+        long startTime = System.currentTimeMillis();
+        Object returnValue = invocation.proceed();
+        long endTime = System.currentTimeMillis();
         Method method = invocation.getMethod();
-        if (hasRequiredAnnotation(method)) {
-            startTimer(method.getName());
-            Object returnValue = invocation.proceed();
-            stopTimer(method.getName());
-            return returnValue;
-        } else {
-            return invocation.proceed();
-        }
-    }
-
-    private void stopTimer(String name) {
-        executionTimer.stop(name,Thread.currentThread().getId(),System.currentTimeMillis());
-    }
-
-    private void startTimer(String name) {
-        executionTimer.start(name,Thread.currentThread().getId(),System.currentTimeMillis());
-    }
-
-    private boolean hasRequiredAnnotation(Method method) {
-        return method.getAnnotation(annotationClass) != null;
+        if (method.getAnnotation(annotationClass) != null)
+            reporter.report(new ExecutionTimeMeasurement(method.getName(), startTime, endTime));
+        return returnValue;
     }
 }
+

@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,16 +17,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = MetricsServiceConfiguration.class)
 public class SpringMetricsServiceTest {
 
     private Subject subjectWithTimer;
+    private ArgumentCaptor<ExecutionTimeMeasurement> captor = ArgumentCaptor.forClass(ExecutionTimeMeasurement.class);
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
@@ -36,20 +36,37 @@ public class SpringMetricsServiceTest {
 
     static class Subject {
 
+        static final int METHOD_EXECUTION_TIME = 1;
+
         static String RETURN_VALUE = "result";
 
         @Timed
         String annotatedRun() {
+            sleep();
             return RETURN_VALUE;
         }
 
+        private void sleep() {
+            try {
+                Thread.sleep(METHOD_EXECUTION_TIME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         String run() {
+            sleep();
             return RETURN_VALUE;
+        }
+
+        @Timed
+        String failedRun() {
+            throw new RuntimeException();
         }
     }
 
     @MockBean
-    private ExecutionTimer timer;
+    private ExecutionTimeReporter reporter;
 
     @Autowired
     private MetricsService metricsService;
@@ -60,29 +77,37 @@ public class SpringMetricsServiceTest {
     }
 
     @Test
-    public void when_metrics_are_added_to_object_annotated_method_call_triggers_timer() {
+    public void when_annotated_method_is_called_execution_time_is_reported() {
         subjectWithTimer.annotatedRun();
-        Mockito.verify(timer).start(eq("annotatedRun"), eq(Thread.currentThread().getId()), Matchers.anyLong());
-        Mockito.verify(timer).stop(eq("annotatedRun"), eq(Thread.currentThread().getId()), Matchers.anyLong());
+        verify(reporter).report(captor.capture());
+        Assert.assertTrue(captor.getValue().getExecutionTime() > 0);
     }
 
     @Test
-    public void when_metrics_are_added_to_object_method_call_without_annotation_triggers_timer() {
+    public void when_annotated_method_is_called_metric_name_is_reported() {
+        subjectWithTimer.annotatedRun();
+        verify(reporter).report(captor.capture());
+        Assert.assertEquals("annotatedRun",captor.getValue().getMetricName());
+    }
+
+    @Test
+    public void when_method_without_annotation_is_called_nothing_is_reported() {
         subjectWithTimer.run();
-        Mockito.verify(timer,never()).start(anyString(), anyLong(), anyLong());
-        Mockito.verify(timer,never()).stop(anyString(), anyLong(), anyLong());
+        Mockito.verify(reporter,never()).report(any(ExecutionTimeMeasurement.class));
     }
 
     @Test
-    public void annotated_method_call_is_executed() {
+    public void method_call_is_executed() {
         String returnValue = subjectWithTimer.annotatedRun();
         Assert.assertEquals(Subject.RETURN_VALUE,returnValue);
-
     }
 
     @Test
-    public void _method_call_without_annotation_is_executed() {
-        String returnValue = subjectWithTimer.run();
-        Assert.assertEquals(Subject.RETURN_VALUE,returnValue);
+    public void when_method_throws_exception_nothing_is_reported() {
+        try {
+            subjectWithTimer.failedRun();
+        } catch (Exception e) {
+        }
+        Mockito.verify(reporter,never()).report(any(ExecutionTimeMeasurement.class));
     }
 }
