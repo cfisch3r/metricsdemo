@@ -1,5 +1,6 @@
 package de.agiledojo.metricsdemo.app;
 
+import de.agiledojo.metricsdemo.MetricsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.metrics.GaugeService;
