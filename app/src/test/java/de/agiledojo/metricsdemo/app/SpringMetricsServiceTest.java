@@ -74,9 +74,15 @@ public class SpringMetricsServiceTest {
     }
 
     @Test
-    public void subject_with_metrics_W() {
+    public void annotated_method_call_is_executed() {
         String returnValue = subjectWithTimer.annotatedRun();
         Assert.assertEquals(Subject.RETURN_VALUE,returnValue);
 
+    }
+
+    @Test
+    public void _method_call_without_annotation_is_executed() {
+        String returnValue = subjectWithTimer.run();
+        Assert.assertEquals(Subject.RETURN_VALUE,returnValue);
     }
 }
