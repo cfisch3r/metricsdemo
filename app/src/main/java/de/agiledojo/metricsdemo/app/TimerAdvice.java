@@ -24,7 +24,8 @@ public class TimerAdvice implements MethodInterceptor {
             stopTimer(method.getName());
             return returnValue;
         } else {
-            return invocation.proceed();
+//            return invocation.proceed();
+            return null;
         }
     }
 

@@ -1,6 +1,7 @@
 package de.agiledojo.metricsdemo.app;
 
 import de.agiledojo.metricsdemo.MetricsService;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,17 +34,17 @@ public class SpringMetricsServiceTest {
     }
 
 
-    class Subject {
+    static class Subject {
 
-        int numberOfCalls = 0;
+        static String RETURN_VALUE = "result";
 
         @Timed
-        void annotatedRun() {
-            numberOfCalls++;
+        String annotatedRun() {
+            return RETURN_VALUE;
         }
 
-        void run() {
-            numberOfCalls++;
+        String run() {
+            return RETURN_VALUE;
         }
     }
 
@@ -70,5 +71,12 @@ public class SpringMetricsServiceTest {
         subjectWithTimer.run();
         Mockito.verify(timer,never()).start(anyString(), anyLong(), anyLong());
         Mockito.verify(timer,never()).stop(anyString(), anyLong(), anyLong());
+    }
+
+    @Test
+    public void subject_with_metrics_W() {
+        String returnValue = subjectWithTimer.annotatedRun();
+        Assert.assertEquals(Subject.RETURN_VALUE,returnValue);
+
     }
 }
