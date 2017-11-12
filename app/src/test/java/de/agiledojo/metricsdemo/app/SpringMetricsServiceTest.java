@@ -1,6 +1,7 @@
 package de.agiledojo.metricsdemo.app;
 
 import de.agiledojo.metricsdemo.MetricsService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -24,6 +25,8 @@ import static org.mockito.Mockito.never;
 @ContextConfiguration(classes = MetricsServiceConfiguration.class)
 public class SpringMetricsServiceTest {
 
+    private Subject subjectWithTimer;
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     public @interface Timed {
@@ -32,13 +35,15 @@ public class SpringMetricsServiceTest {
 
     class Subject {
 
+        int numberOfCalls = 0;
+
         @Timed
         void annotatedRun() {
-
+            numberOfCalls++;
         }
 
         void run() {
-
+            numberOfCalls++;
         }
     }
 
@@ -48,18 +53,21 @@ public class SpringMetricsServiceTest {
     @Autowired
     private MetricsService metricsService;
 
+    @Before
+    public void setUp() throws Exception {
+        subjectWithTimer = metricsService.addMetrics(new Subject(), Timed.class);
+    }
+
     @Test
     public void when_metrics_are_added_to_object_annotated_method_call_triggers_timer() {
-        Subject objectWithTimer = metricsService.addMetrics(new Subject(), Timed.class);
-        objectWithTimer.annotatedRun();
+        subjectWithTimer.annotatedRun();
         Mockito.verify(timer).start(eq("annotatedRun"), eq(Thread.currentThread().getId()), Matchers.anyLong());
         Mockito.verify(timer).stop(eq("annotatedRun"), eq(Thread.currentThread().getId()), Matchers.anyLong());
     }
 
     @Test
     public void when_metrics_are_added_to_object_method_call_without_annotation_triggers_timer() {
-        Subject objectWithTimer = metricsService.addMetrics(new Subject(), Timed.class);
-        objectWithTimer.run();
+        subjectWithTimer.run();
         Mockito.verify(timer,never()).start(anyString(), anyLong(), anyLong());
         Mockito.verify(timer,never()).stop(anyString(), anyLong(), anyLong());
     }

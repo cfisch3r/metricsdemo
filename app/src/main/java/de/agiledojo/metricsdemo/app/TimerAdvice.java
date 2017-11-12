@@ -18,15 +18,25 @@ public class TimerAdvice implements MethodInterceptor {
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Method method = invocation.getMethod();
-        Annotation annotation = method.getAnnotation(annotationClass);
-        if (annotation != null) {
-            executionTimer.start(method.getName(),Thread.currentThread().getId(),System.currentTimeMillis());
+        if (hasRequiredAnnotation(method)) {
+            startTimer(method.getName());
             Object returnValue = invocation.proceed();
-            executionTimer.stop(method.getName(),Thread.currentThread().getId(),System.currentTimeMillis());
+            stopTimer(method.getName());
             return returnValue;
         } else {
-            Object returnValue = invocation.proceed();
-            return returnValue;
+            return invocation.proceed();
         }
+    }
+
+    private void stopTimer(String name) {
+        executionTimer.stop(name,Thread.currentThread().getId(),System.currentTimeMillis());
+    }
+
+    private void startTimer(String name) {
+        executionTimer.start(name,Thread.currentThread().getId(),System.currentTimeMillis());
+    }
+
+    private boolean hasRequiredAnnotation(Method method) {
+        return method.getAnnotation(annotationClass) != null;
     }
 }
