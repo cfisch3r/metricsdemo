@@ -7,6 +7,6 @@ public class InternalMetricsDemo {
     }
 
     public InternalMetricsDemo(MetricsService metricsService) {
-        InternalObject objectWithMetrics = metricsService.addMetrics(new InternalObject());
+        InternalObject objectWithMetrics = metricsService.addMetrics(new InternalObject(),Timed.class);
     }
 }

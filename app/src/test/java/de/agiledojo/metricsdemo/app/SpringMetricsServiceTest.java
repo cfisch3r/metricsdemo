@@ -33,9 +33,9 @@ public class SpringMetricsServiceTest {
 
     @Test
     public void when_metrics_are_added_to_object_method_call_triggers_timer() {
-        Subject objectWithTimer = metricsService.addMetrics(new Subject());
+        Subject objectWithTimer = metricsService.addMetrics(new Subject(),Timed.class);
         objectWithTimer.annotatedRun();
-        Mockito.verify(timer).start(eq("internal.timer"), eq(Thread.currentThread().getId()), Matchers.anyLong());
-        Mockito.verify(timer).stop(eq("internal.timer"), eq(Thread.currentThread().getId()), Matchers.anyLong());
+        Mockito.verify(timer).start(eq("annotatedRun"), eq(Thread.currentThread().getId()), Matchers.anyLong());
+        Mockito.verify(timer).stop(eq("annotatedRun"), eq(Thread.currentThread().getId()), Matchers.anyLong());
     }
 }

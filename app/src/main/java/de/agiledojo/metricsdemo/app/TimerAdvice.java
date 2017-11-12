@@ -1,25 +1,27 @@
 package de.agiledojo.metricsdemo.app;
 
-import de.agiledojo.metricsdemo.Timed;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 public class TimerAdvice implements MethodInterceptor {
     private ExecutionTimer executionTimer;
+    private Class<? extends Annotation> annotationClass;
 
-    public TimerAdvice(ExecutionTimer executionTimer) {
+    public <A extends Annotation> TimerAdvice(ExecutionTimer executionTimer, Class<A> annotationClass) {
         this.executionTimer = executionTimer;
+        this.annotationClass = annotationClass;
     }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Method method = invocation.getMethod();
-        Timed timedAnnotation = method.getAnnotation(Timed.class);
-        executionTimer.start(timedAnnotation.value(),Thread.currentThread().getId(),System.currentTimeMillis());
+//        Annotation annotation = method.getAnnotation(annotationClass);
+        executionTimer.start(method.getName(),Thread.currentThread().getId(),System.currentTimeMillis());
         Object returnValue = invocation.proceed();
-        executionTimer.stop(timedAnnotation.value(),Thread.currentThread().getId(),System.currentTimeMillis());
+        executionTimer.stop(method.getName(),Thread.currentThread().getId(),System.currentTimeMillis());
         return returnValue;
     }
 }
