@@ -1,54 +1,56 @@
 package de.agiledojo.metricsdemo.app;
 
+import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeMeasurement;
+import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeReporter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class, TimerIntegrationTest.TimedBeanConfiguration.class})
+@ContextConfiguration(classes = TimerIntegrationTest.TimedBeanConfiguration.class)
 public class TimerIntegrationTest {
 
     @TestConfiguration
+    @EnableAutoConfiguration
     public static class TimedBeanConfiguration {
 
         @Bean
         public TimedBean timedBean() {
             return new TimedBean();
         }
+
+        @Bean
+        public TimedMethodAspect timedMethodAspect(@Autowired ExecutionTimeReporter executionTimeReporter) {
+            return new TimedMethodAspect(executionTimeReporter);
+        }
     }
 
     @MockBean
-    private ExecutionTimer timer;
+    private ExecutionTimeReporter executionTimeReporter;
 
     @Autowired
     TimedBean timedBean;
 
-    @Autowired
-    TimedMethodAspect timedMethodAspect;
-
     @Test
     public void without_Timed_Annotation_no_metric_is_reported() {
         timedBean.unTimedRun();
-        verify(timer, never()).start(anyString(), anyLong(), anyLong());
-        verify(timer, never()).stop(anyString(), anyLong(), anyLong());
+        verify(executionTimeReporter, never()).report(any(ExecutionTimeMeasurement.class));
     }
 
     @Test
     public void with_Timed_Annotation_metric_is_reported() {
         timedBean.TimedRun();
-        verify(timer).start(eq("demo.timer"), eq(Thread.currentThread().getId()), anyLong());
-        verify(timer).stop(eq("demo.timer") ,eq(Thread.currentThread().getId()), anyLong());
+        verify(executionTimeReporter).report(any(ExecutionTimeMeasurement.class));
     }
 
 }

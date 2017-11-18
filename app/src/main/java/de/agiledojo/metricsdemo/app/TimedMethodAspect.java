@@ -1,28 +1,22 @@
 package de.agiledojo.metricsdemo.app;
 
-import de.agiledojo.metricsdemo.Timed;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
+import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeMeasurement;
+import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeReporter;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 
 @Aspect
 public class TimedMethodAspect {
 
-    private ExecutionTimer timer;
+    private ExecutionTimeReporter executionTimeReporter;
 
-    public TimedMethodAspect(ExecutionTimer timer) {
-        this.timer = timer;
+    public TimedMethodAspect(ExecutionTimeReporter executionTimeReporter) {
+
+        this.executionTimeReporter = executionTimeReporter;
     }
 
-    @Before(value = "@annotation(timed)")
-    public void beforeCallingTimedMethod(Timed timed) {
-        timer.start(timed.value(),Thread.currentThread().getId(),System.currentTimeMillis());
+    @Around("@annotation(de.agiledojo.metricsdemo.Timed)")
+    public void measureExecutionTime() {
+        executionTimeReporter.report(new ExecutionTimeMeasurement("",0,0));
     }
-
-    @AfterReturning(pointcut = "@annotation(timed)")
-    public void afterCallingTimedMethod(Timed timed) {
-        timer.stop(timed.value(),Thread.currentThread().getId(),System.currentTimeMillis());
-    }
-}
+ }
