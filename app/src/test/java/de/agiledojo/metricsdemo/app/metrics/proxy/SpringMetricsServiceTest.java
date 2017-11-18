@@ -1,6 +1,7 @@
-package de.agiledojo.metricsdemo.app;
+package de.agiledojo.metricsdemo.app.metrics.proxy;
 
 import de.agiledojo.metricsdemo.MetricsService;
+import de.agiledojo.metricsdemo.app.MetricsServiceConfiguration;
 import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeMeasurement;
 import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeReporter;
 import org.junit.Assert;
@@ -8,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
+import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,7 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -95,7 +95,7 @@ public class SpringMetricsServiceTest {
     @Test
     public void when_method_without_annotation_is_called_nothing_is_reported() {
         subjectWithTimer.run();
-        Mockito.verify(reporter,never()).report(any(ExecutionTimeMeasurement.class));
+        verify(reporter, never()).report(Matchers.any(ExecutionTimeMeasurement.class));
     }
 
     @Test
@@ -110,6 +110,6 @@ public class SpringMetricsServiceTest {
             subjectWithTimer.failedRun();
         } catch (Exception e) {
         }
-        Mockito.verify(reporter,never()).report(any(ExecutionTimeMeasurement.class));
+        verify(reporter, never()).report(Matchers.any(ExecutionTimeMeasurement.class));
     }
 }

@@ -1,5 +1,7 @@
-package de.agiledojo.metricsdemo.app.metrics;
+package de.agiledojo.metricsdemo.app.metrics.proxy;
 
+import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeMeasurement;
+import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeReporter;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 

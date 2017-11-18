@@ -1,4 +1,4 @@
-package de.agiledojo.metricsdemo.app;
+package de.agiledojo.metricsdemo.app.metrics.aspect;
 
 import de.agiledojo.metricsdemo.Timed;
 import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeMeasurement;

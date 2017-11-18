@@ -1,6 +1,7 @@
-package de.agiledojo.metricsdemo.app.metrics;
+package de.agiledojo.metricsdemo.app.metrics.proxy;
 
 import de.agiledojo.metricsdemo.MetricsService;
+import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeReporter;
 import org.springframework.aop.framework.ProxyFactory;
 
 import java.lang.annotation.Annotation;
