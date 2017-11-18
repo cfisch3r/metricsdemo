@@ -1,6 +1,5 @@
-package de.agiledojo.metricsdemo.app;
+package de.agiledojo.metricsdemo.app.metrics;
 
-import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeMeasurement;
 import org.junit.Assert;
 import org.junit.Test;
 
