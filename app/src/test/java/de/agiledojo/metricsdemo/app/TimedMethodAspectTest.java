@@ -66,6 +66,8 @@ public class TimedMethodAspectTest {
      */
     private static class ClockFake extends Clock {
 
+        private static final int TIME_INCREASE_INCREMENT = 500;
+
         private int milli = 0;
 
         @Override
@@ -81,7 +83,7 @@ public class TimedMethodAspectTest {
         @Override
         public Instant instant() {
             Instant instant = Instant.ofEpochMilli(milli);
-            milli += 500;
+            milli += TIME_INCREASE_INCREMENT;
             return instant;
 
         }
@@ -123,6 +125,6 @@ public class TimedMethodAspectTest {
     public void with_timed_Annotation_method_execution_time_is_measured() {
         timedBean.timedRun();
         verify(executionTimeReporter).report(captor.capture());
-        Assert.assertEquals(500, captor.getValue().getExecutionTime());
+        Assert.assertEquals(ClockFake.TIME_INCREASE_INCREMENT, captor.getValue().getExecutionTime());
     }
 }
