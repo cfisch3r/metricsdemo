@@ -1,4 +1,4 @@
-package de.agiledojo.metricsdemo.app;
+package de.agiledojo.metricsdemo.app.metrics;
 
 public class ExecutionTimeMeasurement {
 

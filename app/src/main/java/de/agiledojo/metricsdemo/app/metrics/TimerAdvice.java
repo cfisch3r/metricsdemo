@@ -1,4 +1,4 @@
-package de.agiledojo.metricsdemo.app;
+package de.agiledojo.metricsdemo.app.metrics;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -9,12 +9,12 @@ import java.lang.reflect.Method;
 /**
  * Method Interceptor which reports execution time for a method call.
  */
-public class TimerAdvice implements MethodInterceptor {
+class TimerAdvice implements MethodInterceptor {
 
     private ExecutionTimeReporter reporter;
     private Class<? extends Annotation> annotationClass;
 
-    public <A extends Annotation> TimerAdvice(ExecutionTimeReporter reporter, Class<A> annotationClass) {
+    <A extends Annotation> TimerAdvice(ExecutionTimeReporter reporter, Class<A> annotationClass) {
         this.reporter = reporter;
         this.annotationClass = annotationClass;
     }

@@ -1,4 +1,4 @@
-package de.agiledojo.metricsdemo.app;
+package de.agiledojo.metricsdemo.app.metrics;
 
 import de.agiledojo.metricsdemo.MetricsService;
 import org.springframework.aop.framework.ProxyFactory;

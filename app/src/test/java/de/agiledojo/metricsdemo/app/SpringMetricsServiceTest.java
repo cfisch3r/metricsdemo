@@ -1,6 +1,8 @@
 package de.agiledojo.metricsdemo.app;
 
 import de.agiledojo.metricsdemo.MetricsService;
+import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeMeasurement;
+import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeReporter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +48,7 @@ public class SpringMetricsServiceTest {
             return RETURN_VALUE;
         }
 
+        @SuppressWarnings("squid:S2925")
         private void sleep() {
             try {
                 Thread.sleep(METHOD_EXECUTION_TIME);
@@ -54,9 +57,8 @@ public class SpringMetricsServiceTest {
             }
         }
 
-        String run() {
+        void run() {
             sleep();
-            return RETURN_VALUE;
         }
 
         @Timed
