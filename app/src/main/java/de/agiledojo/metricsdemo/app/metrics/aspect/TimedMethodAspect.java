@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
 import java.time.Clock;
+import java.time.Instant;
 
 @Aspect
 public class TimedMethodAspect {
@@ -21,9 +22,9 @@ public class TimedMethodAspect {
 
     @Around("@annotation(de.agiledojo.metricsdemo.Timed)")
     public Object measureExecutionTime(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        long startTime = clock.instant().toEpochMilli();
+        Instant startTime = clock.instant();
         Object result = proceedingJoinPoint.proceed();
-        long endTime = clock.instant().toEpochMilli();
+        Instant endTime = clock.instant();
         executionTimeReporter.report(new ExecutionTimeMeasurement(proceedingJoinPoint.getSignature().getName(),startTime,endTime));
         return result;
     }

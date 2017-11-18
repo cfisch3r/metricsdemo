@@ -30,12 +30,4 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator:1.5.8.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-aop:1.5.8.RELEASE'
     testCompile 'org.springframework.boot:spring-boot-starter-test:1.5.8.RELEASE'
-//
-//
-//    testCompile 'org.springframework.boot:spring-boot-test:1.5.8.RELEASE'
-//    testCompile 'org.springframework:spring-test:5.0.1.RELEASE'
-
-
-
-
 }

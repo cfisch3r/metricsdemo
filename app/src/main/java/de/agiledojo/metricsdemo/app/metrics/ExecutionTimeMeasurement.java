@@ -1,21 +1,22 @@
 package de.agiledojo.metricsdemo.app.metrics;
 
+import java.time.Instant;
+
 public class ExecutionTimeMeasurement {
 
     private String metricName;
+    private Instant start;
+    private Instant end;
 
-    private long startTime;
+    public ExecutionTimeMeasurement(String metricName, Instant start, Instant end) {
 
-    private long endTime;
-
-    public ExecutionTimeMeasurement(String metricName, long startTime, long endTime) {
         this.metricName = metricName;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.start = start;
+        this.end = end;
     }
 
     public long getExecutionTime() {
-        return endTime - startTime;
+        return end.toEpochMilli() - start.toEpochMilli();
     }
 
     public String getMetricName() {
