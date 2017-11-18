@@ -1,9 +1,9 @@
 package de.agiledojo.metricsdemo.app.metrics.proxy;
 
 import de.agiledojo.metricsdemo.MetricsService;
+import de.agiledojo.metricsdemo.app.metrics.ClockFake;
 import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeMeasurement;
 import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeReporter;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -32,7 +33,7 @@ public class SpringMetricsServiceTest {
     public static class Configuration {
         @Bean
         public MetricsService metricsService(@Autowired ExecutionTimeReporter reporter) {
-            return new SpringMetricsService(reporter);
+            return new SpringMetricsService(new TimeAdviceFactory(reporter, new ClockFake()));
         }
     }
 
@@ -47,27 +48,15 @@ public class SpringMetricsServiceTest {
 
     static class Subject {
 
-        static final int METHOD_EXECUTION_TIME = 1;
-
         static String RETURN_VALUE = "result";
 
         @Timed
         String annotatedRun() {
-            sleep();
             return RETURN_VALUE;
         }
 
-        @SuppressWarnings("squid:S2925")
-        private void sleep() {
-            try {
-                Thread.sleep(METHOD_EXECUTION_TIME);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
         void run() {
-            sleep();
+
         }
 
         @Timed
@@ -91,14 +80,14 @@ public class SpringMetricsServiceTest {
     public void when_annotated_method_is_called_execution_time_is_reported() {
         subjectWithTimer.annotatedRun();
         verify(reporter).report(captor.capture());
-        Assert.assertTrue(captor.getValue().getExecutionTime() > 0);
+        assertEquals(ClockFake.TIME_INCREASE_INCREMENT,captor.getValue().getExecutionTime());
     }
 
     @Test
     public void when_annotated_method_is_called_metric_name_is_reported() {
         subjectWithTimer.annotatedRun();
         verify(reporter).report(captor.capture());
-        Assert.assertEquals("annotatedRun",captor.getValue().getMetricName());
+        assertEquals("annotatedRun",captor.getValue().getMetricName());
     }
 
     @Test
@@ -110,7 +99,7 @@ public class SpringMetricsServiceTest {
     @Test
     public void method_call_is_executed() {
         String returnValue = subjectWithTimer.annotatedRun();
-        Assert.assertEquals(Subject.RETURN_VALUE,returnValue);
+        assertEquals(Subject.RETURN_VALUE,returnValue);
     }
 
     @Test

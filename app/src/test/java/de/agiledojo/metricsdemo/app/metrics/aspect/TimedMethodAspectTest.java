@@ -1,6 +1,7 @@
 package de.agiledojo.metricsdemo.app.metrics.aspect;
 
 import de.agiledojo.metricsdemo.Timed;
+import de.agiledojo.metricsdemo.app.metrics.ClockFake;
 import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeMeasurement;
 import de.agiledojo.metricsdemo.app.metrics.ExecutionTimeReporter;
 import org.junit.Assert;
@@ -14,10 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
@@ -57,34 +54,6 @@ public class TimedMethodAspectTest {
         }
 
         public void unTimedRun() {
-
-        }
-    }
-
-    /**
-     * Fake for System Clock
-     */
-    private static class ClockFake extends Clock {
-
-        private static final int TIME_INCREASE_INCREMENT = 500;
-
-        private int milli = 0;
-
-        @Override
-        public ZoneId getZone() {
-            return null;
-        }
-
-        @Override
-        public Clock withZone(ZoneId zone) {
-            return null;
-        }
-
-        @Override
-        public Instant instant() {
-            Instant instant = Instant.ofEpochMilli(milli);
-            milli += TIME_INCREASE_INCREMENT;
-            return instant;
 
         }
     }
