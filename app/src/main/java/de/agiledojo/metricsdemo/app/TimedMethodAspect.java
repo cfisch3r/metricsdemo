@@ -24,7 +24,7 @@ public class TimedMethodAspect {
         long startTime = clock.instant().toEpochMilli();
         Object result = proceedingJoinPoint.proceed();
         long endTime = clock.instant().toEpochMilli();
-        executionTimeReporter.report(new ExecutionTimeMeasurement("",startTime,endTime));
+        executionTimeReporter.report(new ExecutionTimeMeasurement(proceedingJoinPoint.getSignature().getName(),startTime,endTime));
         return result;
     }
  }

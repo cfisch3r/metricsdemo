@@ -24,12 +24,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = TimerIntegrationTest.TimedBeanConfiguration.class)
-public class TimerIntegrationTest {
+@ContextConfiguration(classes = TimedMethodAspectTest.Configuration.class)
+public class TimedMethodAspectTest {
+
 
     @TestConfiguration
     @EnableAutoConfiguration
-    public static class TimedBeanConfiguration {
+    public static class Configuration {
 
         @Bean
         public TimedBean timedBean() {
@@ -42,13 +43,16 @@ public class TimerIntegrationTest {
         }
     }
 
+    /**
+     * Test Class with Annotations
+     */
     private static class TimedBean {
 
 
         public static final String RETURN_VALUE = "result";
 
         @Timed("demo.timer")
-        public String TimedRun() {
+        public String timedRun() {
             return RETURN_VALUE;
         }
 
@@ -57,6 +61,9 @@ public class TimerIntegrationTest {
         }
     }
 
+    /**
+     * Fake for System Clock
+     */
     private static class ClockFake extends Clock {
 
         private int milli = 0;
@@ -86,6 +93,8 @@ public class TimerIntegrationTest {
     @Autowired
     TimedBean timedBean;
 
+    private ArgumentCaptor<ExecutionTimeMeasurement> captor = ArgumentCaptor.forClass(ExecutionTimeMeasurement.class);
+
     @Test
     public void without_Timed_Annotation_no_metric_is_reported() {
         timedBean.unTimedRun();
@@ -94,20 +103,26 @@ public class TimerIntegrationTest {
 
     @Test
     public void with_Timed_Annotation_metric_is_reported() {
-        timedBean.TimedRun();
+        timedBean.timedRun();
         verify(executionTimeReporter).report(any(ExecutionTimeMeasurement.class));
     }
 
     @Test
     public void with_timed_Annotation_method_is_still_executed() {
-        Assert.assertEquals(TimedBean.RETURN_VALUE,timedBean.TimedRun());
+        Assert.assertEquals(TimedBean.RETURN_VALUE,timedBean.timedRun());
+    }
+
+    @Test
+    public void with_timed_Annotation_metric_name_is_reported() {
+        timedBean.timedRun();
+        verify(executionTimeReporter).report(captor.capture());
+        Assert.assertEquals("timedRun",captor.getValue().getMetricName());
     }
 
     @Test
     public void with_timed_Annotation_method_execution_time_is_measured() {
-        timedBean.TimedRun();
-        ArgumentCaptor<ExecutionTimeMeasurement> captor = ArgumentCaptor.forClass(ExecutionTimeMeasurement.class);
+        timedBean.timedRun();
         verify(executionTimeReporter).report(captor.capture());
-        Assert.assertEquals(500,captor.getValue().getExecutionTime());
+        Assert.assertEquals(500, captor.getValue().getExecutionTime());
     }
 }
