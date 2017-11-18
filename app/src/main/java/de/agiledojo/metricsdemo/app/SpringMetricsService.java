@@ -5,6 +5,9 @@ import org.springframework.aop.framework.ProxyFactory;
 
 import java.lang.annotation.Annotation;
 
+/**
+ * adds proxies to objects for execution time measurement.
+ */
 public class SpringMetricsService implements MetricsService {
 
     private ExecutionTimeReporter reporter;
