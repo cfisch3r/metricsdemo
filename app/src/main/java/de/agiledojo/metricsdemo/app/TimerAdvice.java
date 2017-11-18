@@ -6,6 +6,9 @@ import org.aopalliance.intercept.MethodInvocation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+/**
+ * Method Interceptor which reports execution time for a method call.
+ */
 public class TimerAdvice implements MethodInterceptor {
 
     private ExecutionTimeReporter reporter;
@@ -18,14 +21,21 @@ public class TimerAdvice implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-
         long startTime = System.currentTimeMillis();
         Object returnValue = invocation.proceed();
         long endTime = System.currentTimeMillis();
         Method method = invocation.getMethod();
-        if (method.getAnnotation(annotationClass) != null)
-            reporter.report(new ExecutionTimeMeasurement(method.getName(), startTime, endTime));
+        if (hasRequiredAnnotation(method))
+            reportMeasurement(method, startTime, endTime);
         return returnValue;
+    }
+
+    private void reportMeasurement(Method method, long startTime, long endTime) {
+        reporter.report(new ExecutionTimeMeasurement(method.getName(), startTime, endTime));
+    }
+
+    private boolean hasRequiredAnnotation(Method method) {
+        return method.getAnnotation(annotationClass) != null;
     }
 }
 
