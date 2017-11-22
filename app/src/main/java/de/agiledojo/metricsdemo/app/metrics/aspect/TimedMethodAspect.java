@@ -9,6 +9,9 @@ import org.aspectj.lang.annotation.Aspect;
 import java.time.Clock;
 import java.time.Instant;
 
+/**
+ * measures and reports execution time for methods with specified annotation.
+ */
 @Aspect
 public class TimedMethodAspect {
 

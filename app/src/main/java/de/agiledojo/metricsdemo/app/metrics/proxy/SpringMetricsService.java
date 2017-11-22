@@ -16,6 +16,9 @@ public class SpringMetricsService implements MetricsService {
         this.timeAdviceFactory = timeAdviceFactory;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T, A extends Annotation> T addMetrics(T subject, Class<A> annotationClass) {
         ProxyFactory factory = new ProxyFactory(subject);
